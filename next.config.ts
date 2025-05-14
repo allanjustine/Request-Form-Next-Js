@@ -32,6 +32,16 @@ const nextConfig: NextConfig = {
         hostname: "cdn-icons-png.flaticon.com",
         pathname: "/**",
       },
+      {
+        protocol: "https", // Use https to match your .env
+        hostname: "request.smctgroup.ph", // No port needed if it's default 443 for https
+        pathname: "/storage/**",
+      },
+       {
+        protocol: "https", // Use https to match your .env
+        hostname: "requestserver.smctgroup.ph", // No port needed if it's default 443 for https
+        pathname: "/storage/**",
+      },
     ],
     domains: ["requestserver.smctgroup.ph"],
   },
