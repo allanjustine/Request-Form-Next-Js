@@ -22,7 +22,6 @@ export default function useFetch({
   const searchDebounce = useRef<any>(null);
 
   useEffect(() => {
-    console.log(isFetch);
     if (!isFetch) return;
     setPagination((pagination) => ({
       ...pagination,
