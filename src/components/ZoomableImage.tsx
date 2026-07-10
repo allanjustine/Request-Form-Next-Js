@@ -98,6 +98,21 @@ export default function ZoomableImage({
     };
   }, [dragging, isDistanceExceeded, position]);
 
+  useEffect(() => {
+    if (!currentImage) return;
+    const handleEscapeToClose = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeImgModal();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscapeToClose);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscapeToClose);
+    };
+  }, [currentImage]);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center w-full bg-black/75"
