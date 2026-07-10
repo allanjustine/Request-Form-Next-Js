@@ -31,8 +31,10 @@ const EditUserModal = ({
   const [contact, setContact] = useState<string>("");
   const [editedRole, setEditedRole] = useState<string>("");
   const [editedPosition, setEditedPosition] = useState<string>("");
+  const [editedEmployeeId, setEditedEmployeeId] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [errorBag, setErrorBag] = useState<any>(null);
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [notedBy, setNotedBy] = useState<number[]>([]);
@@ -141,6 +143,7 @@ const EditUserModal = ({
       setEditedBranchName(selectedUser.branch_name || "");
       setEditedRole(selectedUser.role || "");
       setEditedPosition(selectedUser.position || "");
+      setEditedEmployeeId(selectedUser.employee_id || "");
     }
   }, [selectedUser]);
 
@@ -156,6 +159,7 @@ const EditUserModal = ({
       setEditedBranchName(selectedUser.branch_name);
       setEditedRole(selectedUser.role);
       setEditedPosition(selectedUser.position);
+      setEditedEmployeeId(selectedUser.employee_id);
       setPassword("");
     }
     editModalClose();
@@ -185,7 +189,8 @@ const EditUserModal = ({
         editedBranch.trim() === "" ||
         editedBranchCode.trim() === "" ||
         editedRole.trim() === "" ||
-        editedPosition.trim() === ""
+        editedPosition.trim() === "" ||
+        editedEmployeeId.trim() === ""
       ) {
         setErrorMessage("Please fill out all required fields.");
         return;
@@ -229,6 +234,7 @@ const EditUserModal = ({
         password?: string; // Make password optional
         notedBy?: number[];
         approvedBy?: number[];
+        employee_id?: string;
       }
 
       // Create updatedData object
@@ -252,6 +258,7 @@ const EditUserModal = ({
         role: entityType === "User" ? editedRole : undefined,
         position: entityType === "User" ? editedPosition : undefined,
         password: password.trim() !== "" ? password.trim() : undefined,
+        employee_id: entityType === "User" ? editedEmployeeId : undefined,
       };
 
       // Include password field only if a new password is provided
@@ -303,9 +310,13 @@ const EditUserModal = ({
       openSuccessModal();
       setErrorMessage(""); // Clear error message on success
       setPassword("");
+      setErrorBag(null); // Clear error bag on success
     } catch (error: any) {
       if (error.response.status === 400) {
         setErrorMessage(error.response.data.message);
+      }
+      if (error.response.status === 422) {
+        setErrorBag(Object.values(error.response.data.errors).flat());
       } else {
         setErrorMessage("Failed to update. Please try again.");
       }
@@ -331,6 +342,7 @@ const EditUserModal = ({
       "Branch Code",
       "Branch Name",
       "Password",
+      "Employee ID",
     ],
     Branch: ["Branch", "BranchCode", "BranchName"],
     Manager: ["Manager Name", "Manager ID", "Branch Code"],
@@ -517,7 +529,9 @@ const EditUserModal = ({
                                 ? contact
                                 : field === "Password"
                                   ? password
-                                  : ""
+                                  : field === "Employee ID"
+                                    ? editedEmployeeId
+                                    : ""
                     }
                     onChange={(e) =>
                       field === "Firstname"
@@ -532,7 +546,9 @@ const EditUserModal = ({
                                 ? setContact(e.target.value)
                                 : field === "Password"
                                   ? setPassword(e.target.value)
-                                  : null
+                                  : field === "Employee ID"
+                                    ? setEditedEmployeeId(e.target.value)
+                                    : null
                     }
                   />
                 </>
@@ -614,6 +630,12 @@ const EditUserModal = ({
           {errorMessage && (
             <p className="text-sm text-red-600">{errorMessage}</p>
           )}
+          {errorBag &&
+            errorBag.map((error: string, index: number) => (
+              <p className="text-sm text-red-600" key={index}>
+                {error}
+              </p>
+            ))}
         </div>
 
         {/* Buttons */}
