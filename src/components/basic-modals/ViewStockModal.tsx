@@ -554,9 +554,9 @@ const ViewStockModal: React.FC<Props> = ({
             </>
           ) : (
             <div className="flex">
-              <p>
+              <div>
                 <h1 className="flex items-center w-full">Kind of Request: </h1>
-              </p>
+              </div>
               <p className="w-full pl-1 font-bold bg-base-100 rounded-md">
                 {record?.kind_of_request}
               </p>
