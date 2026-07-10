@@ -69,8 +69,8 @@ const ApproverViewRequest = (props: Props) => {
             row.status === "Pending"
               ? "bg-yellow-400"
               : row.status === "Approved"
-              ? "bg-green-400"
-              : "bg-pink-400"
+                ? "bg-green-400"
+                : "bg-pink-400"
           } rounded-lg w-5/12 py-1 text-center text-white`}
         >
           {row.status}
