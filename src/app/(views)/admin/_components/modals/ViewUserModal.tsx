@@ -17,6 +17,7 @@ interface Record {
   profile_picture: string;
   email_verified_at: string;
   signature: string;
+  employee_id: string;
 }
 
 interface ViewUserModalProps {
@@ -62,7 +63,7 @@ const ViewUserModal: React.FC<ViewUserModalProps> = ({
                   alt="Profile"
                   className="w-32 h-32 mb-4 border-4 rounded-full border-primary"
                 />
-                <h3 className="flex text-xl font-bold text-gray-800">
+                <h3 className="flex text-xl font-bold text-gray-800 dark:text-gray-100">
                   {user.username || "User Name"}{" "}
                   {user.email_verified_at !== null ? (
                     <svg
@@ -79,8 +80,11 @@ const ViewUserModal: React.FC<ViewUserModalProps> = ({
                     </svg>
                   ) : null}
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-200">
                   {user.email || "user@example.com"}
+                </p>
+                <p className="text-gray-600 dark:text-gray-200">
+                  {user.employee_id || "Employee ID not available"}
                 </p>
               </div>
 
@@ -94,7 +98,8 @@ const ViewUserModal: React.FC<ViewUserModalProps> = ({
                         key !== "profile_picture" &&
                         key !== "username" &&
                         key !== "email" &&
-                        key !== "signature"
+                        key !== "signature" &&
+                        key !== "employee_id",
                     )
                     .map(([key, value], index) =>
                       index % 2 === 0 ? (
@@ -103,7 +108,7 @@ const ViewUserModal: React.FC<ViewUserModalProps> = ({
                             {key.replace(/_/g, " ").toUpperCase()}
                           </p>
                           <div className="p-4 border border-gray-300 shadow-sm rounded-xl">
-                            <p className="text-gray-800 break-words">
+                            <p className="text-gray-800 dark:text-gray-100 break-words">
                               {key === "email_verified_at"
                                 ? value === null
                                   ? "Not yet Verified"
@@ -112,7 +117,7 @@ const ViewUserModal: React.FC<ViewUserModalProps> = ({
                             </p>
                           </div>
                         </div>
-                      ) : null
+                      ) : null,
                     )}
                 </div>
 
@@ -123,7 +128,8 @@ const ViewUserModal: React.FC<ViewUserModalProps> = ({
                       ([key]) =>
                         key !== "profile_picture" &&
                         key !== "username" &&
-                        key !== "email"
+                        key !== "email" &&
+                        key !== "employee_id",
                     )
                     .map(([key, value], index) =>
                       index % 2 !== 0 ? (
@@ -132,10 +138,12 @@ const ViewUserModal: React.FC<ViewUserModalProps> = ({
                             {key.replace(/_/g, " ").toUpperCase()}
                           </p>
                           <div className="p-4 border border-gray-300 shadow-sm rounded-xl">
-                            <p className="text-gray-800 break-words">{value}</p>
+                            <p className="text-gray-800 dark:text-gray-100 break-words">
+                              {value}
+                            </p>
                           </div>
                         </div>
-                      ) : null
+                      ) : null,
                     )}
                 </div>
               </div>
