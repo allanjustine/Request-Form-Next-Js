@@ -53,8 +53,6 @@ const SetupUser = (props: Props) => {
   const [viewModalIsOpen, setViewModalIsOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<Record | null>(null);
   const [userList, setUserList] = useState<Record[]>([]);
-  const [branchList, setBranchList] = useState<any[]>([]);
-  const [branchMap, setBranchMap] = useState<Map<number, string>>(new Map());
   const [loading, setLoading] = useState(true);
   const [toVerify, setToVerify] = useState(false);
   const [toVerifyId, setToVerifyId] = useState<number>(0);
@@ -62,29 +60,6 @@ const SetupUser = (props: Props) => {
     [key: number]: boolean;
   }>({});
   const { user } = useAuth();
-  useEffect(() => {
-    const fetchBranchData = async () => {
-      try {
-        const response = await api.get(`/view-branch`);
-        const branches = response.data.data;
-
-        // Create a mapping of id to branch_code
-        const branchMapping = new Map<number, string>(
-          branches.map((branch: { id: number; branch_code: string }) => [
-            branch.id,
-            branch.branch_code,
-          ]),
-        );
-
-        setBranchList(branches);
-        setBranchMap(branchMapping);
-      } catch (error) {
-        console.error("Error fetching branch data:", error);
-      }
-    };
-
-    fetchBranchData();
-  }, []);
 
   const [filterTerm, setFilterTerm] = useState("");
   useEffect(() => {

@@ -84,6 +84,7 @@ type Record = {
     };
   };
   approved_attachments: any;
+  user_requested: string;
 };
 
 type MyFormData = {
@@ -222,8 +223,6 @@ const Request = (props: Props) => {
   const [requests, setRequests] = useState<Record[]>([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
-  const [branchList, setBranchList] = useState<any[]>([]);
-  const [branchMap, setBranchMap] = useState<Map<number, string>>(new Map());
   const [loading, setLoading] = useState(true);
   const [notificationReceived, setnotificationReceived] = useState(false);
   const [search, searchRequest] = useState("");
@@ -234,30 +233,6 @@ const Request = (props: Props) => {
   const { user } = useAuth();
   const debounce = useRef<any>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-
-  useEffect(() => {
-    const fetchBranchData = async () => {
-      try {
-        const response = await api.get(`/view-branch`);
-        const branches = response.data.data;
-
-        // Create a mapping of id to branch_code
-        const branchMapping = new Map<number, string>(
-          branches.map((branch: { id: number; branch_code: string }) => [
-            branch.id,
-            branch.branch_code,
-          ]),
-        );
-
-        setBranchList(branches);
-        setBranchMap(branchMapping);
-      } catch (error) {
-        console.error("Error fetching branch data:", error);
-      }
-    };
-
-    fetchBranchData();
-  }, []);
 
   useEffect(() => {
     if (!echo || !user.id) return;
@@ -502,18 +477,7 @@ const Request = (props: Props) => {
     },
     {
       name: "Branch",
-      selector: (row: Record) => {
-        // Ensure form_data exists and has at least one item with a branch field
-        if (
-          row.form_data &&
-          row.form_data.length > 0 &&
-          row.form_data[0].branch
-        ) {
-          const branchId = parseInt(row.form_data[0].branch, 10);
-          return branchMap.get(branchId) || "Unknown";
-        }
-        return "Unknown"; // Return "Unknown" if branch is unavailable
-      },
+      selector: (row: Record) => row?.user_requested,
       sortable: true,
     },
     {

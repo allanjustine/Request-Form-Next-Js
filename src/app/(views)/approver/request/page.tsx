@@ -54,6 +54,7 @@ type Record = {
   requested_signature: string;
   requested_position: string;
   completed_status: string;
+  user_requested: string;
 };
 interface Approver {
   id: number;
@@ -175,8 +176,6 @@ const RequestApprover = (props: Props) => {
   const [requests, setRequests] = useState<Record[]>([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
-  const [branchList, setBranchList] = useState<any[]>([]);
-  const [branchMap, setBranchMap] = useState<Map<number, string>>(new Map());
   const [loading, setLoading] = useState(true);
   const [notificationReceived, setnotificationReceived] = useState(false);
   const [search, searchRequest] = useState("");
@@ -216,30 +215,6 @@ const RequestApprover = (props: Props) => {
       setnotificationReceived(false);
     }
   }, [notificationReceived]);
-
-  useEffect(() => {
-    const fetchBranchData = async () => {
-      try {
-        const response = await api.get(`/view-branch`);
-        const branches = response.data.data;
-
-        // Create a mapping of id to branch_code
-        const branchMapping = new Map<number, string>(
-          branches.map((branch: { id: number; branch_code: string }) => [
-            branch.id,
-            branch.branch_code,
-          ]),
-        );
-
-        setBranchList(branches);
-        setBranchMap(branchMapping);
-      } catch (error) {
-        console.error("Error fetching branch data:", error);
-      }
-    };
-
-    fetchBranchData();
-  }, []);
 
   useEffect(() => {
     if (user.id) {
@@ -347,10 +322,7 @@ const RequestApprover = (props: Props) => {
     {
       name: "Branch",
       sortable: true,
-      selector: (row: Record) => {
-        const branchId = parseInt(row.form_data[0].branch, 10);
-        return branchMap.get(branchId) || "Unknown";
-      },
+      selector: (row: Record) => row?.user_requested,
     },
     {
       name: "Status",
