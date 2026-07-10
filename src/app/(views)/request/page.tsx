@@ -218,7 +218,7 @@ const tableCustomStyles = {
 };
 
 const Request = (props: Props) => {
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState<string>("ALL");
   const [requests, setRequests] = useState<Record[]>([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
@@ -297,6 +297,7 @@ const Request = (props: Props) => {
               page: page,
               per_page: perPage,
               search: search,
+              status: selected,
             },
           });
           setRequests(response.data?.data?.data);
@@ -310,7 +311,15 @@ const Request = (props: Props) => {
 
       fetchRequests();
     }
-  }, [user.id, notificationReceived, toDelete, page, perPage, search]);
+  }, [
+    user.id,
+    notificationReceived,
+    toDelete,
+    page,
+    perPage,
+    search,
+    selected,
+  ]);
 
   const handleView = (record: Record) => {
     setSelectedRecord(record);
@@ -408,8 +417,8 @@ const Request = (props: Props) => {
     });
   };
 
-  const handleClick = (index: number) => {
-    setSelected(index);
+  const handleClick = (status: string) => {
+    setSelected(status);
   };
 
   const handleSearchRequest = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -420,62 +429,6 @@ const Request = (props: Props) => {
     }, 500);
   };
 
-  const filteredData = () => {
-    let filteredRequests: any;
-
-    switch (selected) {
-      case 0:
-        filteredRequests = requests;
-        break;
-      case 1:
-        filteredRequests = requests.filter(
-          (item: Record) => item.status.trim() === "Completed",
-        );
-        break;
-      case 2:
-        filteredRequests = requests.filter(
-          (item: Record) => item.status.trim() === "Pending",
-        );
-        break;
-      case 3:
-        filteredRequests = requests.filter(
-          (item: Record) => item.status.trim() === "Ongoing",
-        );
-        break;
-      case 4:
-        filteredRequests = requests.filter(
-          (item: Record) => item.status.trim() === "Disapproved",
-        );
-        break;
-      default:
-        filteredRequests = requests;
-    }
-
-    // if (search.trim()) {
-    //   filteredRequests = filteredRequests.filter((item: Record) => {
-    //     const formattedDate = new Date(item.created_at).toLocaleDateString(
-    //       "en-US",
-    //       {
-    //         year: "numeric",
-    //         month: "long",
-    //         day: "numeric",
-    //       }
-    //     );
-    //     const branchId = parseInt(item.form_data[0].branch, 10);
-    //     const branchCode = branchMap.get(branchId)?.toLowerCase();
-
-    //     return (
-    //       item.request_code.toLowerCase().includes(search.toLowerCase()) ||
-    //       item.form_type.toLowerCase().includes(search.toLowerCase()) ||
-    //       formattedDate.toLowerCase().includes(search) ||
-    //       branchCode?.includes(search.toLowerCase()) ||
-    //       item.status.toLowerCase().includes(search.toLowerCase())
-    //     );
-    //   });
-    // }
-    return filteredRequests;
-  };
-
   const NoDataComponent = () => (
     <div className="flex items-center justify-center h-64 text-gray-500">
       <p className="text-lg">No {search ? `"${search}"` : ""} records found</p>
@@ -484,21 +437,6 @@ const Request = (props: Props) => {
 
   const LoadingSpinner = () => (
     <table className="table" style={{ background: "white" }}>
-      <thead>
-        <tr>
-          <th
-            className="w-[80px] py-6"
-            style={{ color: "black", fontWeight: "500" }}
-          >
-            Request ID
-          </th>
-          <th style={{ color: "black", fontWeight: "500" }}>Request Type</th>
-          <th style={{ color: "black", fontWeight: "500" }}>Date</th>
-          <th style={{ color: "black", fontWeight: "500" }}>Branch</th>
-          <th style={{ color: "black", fontWeight: "500" }}>Status</th>
-          <th style={{ color: "black", fontWeight: "500" }}>Action</th>
-        </tr>
-      </thead>
       <tbody>
         {Array.from({ length: 6 }).map((_, index) => (
           <tr key={index}>
@@ -524,6 +462,7 @@ const Request = (props: Props) => {
             page: page,
             per_page: perPage,
             search: search,
+            status: selected,
           },
         });
         setRequests(response.data?.data?.data);
@@ -536,6 +475,7 @@ const Request = (props: Props) => {
       }
     }
   };
+
   const columns = [
     {
       name: "Request ID",
@@ -637,11 +577,26 @@ const Request = (props: Props) => {
   ];
 
   const items = [
-    "All Requests",
-    "Completed Requests",
-    "Pending Requests",
-    "Ongoing Requests",
-    "Unsuccessful Requests",
+    {
+      label: "All Requests",
+      value: "ALL",
+    },
+    {
+      label: "Completed Requests",
+      value: "Completed",
+    },
+    {
+      label: "Pending Requests",
+      value: "Pending",
+    },
+    {
+      label: "Ongoing Requests",
+      value: "Ongoing",
+    },
+    {
+      label: "Unsuccessful Requests",
+      value: "Disapproved",
+    },
   ];
 
   const closeModal = () => {
@@ -685,12 +640,15 @@ const Request = (props: Props) => {
                 {items.map((item, index) => (
                   <li
                     key={index}
-                    onClick={() => handleClick(index)}
+                    onClick={() => {
+                      handleClick(item.value);
+                      setLoading(true);
+                    }}
                     className={`cursor-pointer text-info px-2 ${
-                      selected === index ? "underline text-primary" : ""
+                      selected === item.value ? "underline text-primary" : ""
                     } underline-offset-8 decoration-primary decoration-2`}
                   >
-                    {item}
+                    {item.label}
                   </li>
                 ))}
               </div>
@@ -716,8 +674,8 @@ const Request = (props: Props) => {
             <DataTable
               columns={columns}
               defaultSortAsc={false}
-              data={filteredData()
-                ?.map((item: Record) => ({
+              data={requests
+                .map((item: Record) => ({
                   ...item,
                   date: new Date(item.date),
                 }))
@@ -733,6 +691,7 @@ const Request = (props: Props) => {
               onChangeRowsPerPage={handlePerRowsChange}
               paginationTotalRows={totalPages}
               paginationRowsPerPageOptions={paginationRowsPerPageOptions}
+              persistTableHead
             />
           </div>
         </div>
