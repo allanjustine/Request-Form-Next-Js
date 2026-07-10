@@ -40,6 +40,7 @@ type Record = {
   email_verified_at: string;
   verification_status: string;
   signature: string;
+  employee_id: string;
 };
 
 const SetupUser = (props: Props) => {
@@ -72,7 +73,7 @@ const SetupUser = (props: Props) => {
           branches.map((branch: { id: number; branch_code: string }) => [
             branch.id,
             branch.branch_code,
-          ])
+          ]),
         );
 
         setBranchList(branches);
@@ -112,7 +113,8 @@ const SetupUser = (props: Props) => {
             email_verified_at: item.email_verified_at,
             verification_status: item.verification_status,
             signature: item.signature,
-          })
+            employee_id: item.employee_id,
+          }),
         );
 
         setUserList(transformedData);
@@ -128,8 +130,8 @@ const SetupUser = (props: Props) => {
 
   const filteredUserList = userList.filter((user) =>
     Object.values(user).some((value) =>
-      String(value).toLowerCase().includes(filterTerm.toLowerCase())
-    )
+      String(value).toLowerCase().includes(filterTerm.toLowerCase()),
+    ),
   );
   const deleteUser = async () => {
     if (!user.id || !selectedUser) {
@@ -284,7 +286,8 @@ const SetupUser = (props: Props) => {
           position: item.position,
           email_verified_at: item.email_verified_at,
           verification_status: item.verification_status,
-        })
+          employee_id: item.employee_id,
+        }),
       );
 
       setUserList(transformedData);
