@@ -140,8 +140,6 @@ const ApproverCashDisbursement: React.FC<Props> = ({
   const [file, setFile] = useState<File[]>([]);
   const [commentMessage, setCommentMessage] = useState("");
   let logo;
-  const [branchList, setBranchList] = useState<any[]>([]);
-  const [branchMap, setBranchMap] = useState<Map<number, string>>(new Map());
   const hasDisapprovedInNotedBy = notedBy.some(
     (user) => user.status === "Disapproved",
   );
@@ -169,30 +167,6 @@ const ApproverCashDisbursement: React.FC<Props> = ({
   } else {
     logo = null; // Handle the case where branch does not match any of the above
   }
-
-  useEffect(() => {
-    const fetchBranchData = async () => {
-      try {
-        const response = await api.get(`/view-branch`);
-        const branches = response.data.data;
-
-        // Create a mapping of id to branch_name
-        const branchMapping = new Map<number, string>(
-          branches.map((branch: { id: number; branch_code: string }) => [
-            branch.id,
-            branch.branch_code,
-          ]),
-        );
-
-        setBranchList(branches);
-        setBranchMap(branchMapping);
-      } catch (error) {
-        console.error("Error fetching branch data:", error);
-      }
-    };
-
-    fetchBranchData();
-  }, []);
 
   const getCurrencySymbol = (currencyCode: string): string => {
     return (
@@ -832,11 +806,11 @@ const ApproverCashDisbursement: React.FC<Props> = ({
               )}
             </ul>
           </div>
-          {/* <div className="w-full max-w-full ">
+          <div className="w-full max-w-full ">
             <p className="font-semibold">Approved Attachment:</p>
 
             {record.approved_attachment.length === 0 &&
-            user.position === "Vice President" &&
+            user.position === "AVP - Finance" &&
             record.status === "Pending" ? (
               <>
                 <input
@@ -911,7 +885,7 @@ const ApproverCashDisbursement: React.FC<Props> = ({
                 Remove All
               </button>
             </div>
-          )} */}
+          )}
           <div className="max-w-[500px] overflow-x-auto pb-3 ">
             <div className="flex gap-1">
               {file.map((fileItem) => (
