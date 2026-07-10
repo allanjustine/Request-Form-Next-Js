@@ -171,7 +171,7 @@ const tableCustomStyles = {
 };
 
 const RequestApprover = (props: Props) => {
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState<string>("ALL");
   const [requests, setRequests] = useState<Record[]>([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
@@ -252,6 +252,7 @@ const RequestApprover = (props: Props) => {
                 page: page,
                 per_page: perPage,
                 search: search,
+                status: selected,
               },
             },
           );
@@ -266,7 +267,15 @@ const RequestApprover = (props: Props) => {
 
       fetchRequests();
     }
-  }, [user.id, notificationReceived, isRefresh, page, perPage, search]);
+  }, [
+    user.id,
+    notificationReceived,
+    isRefresh,
+    page,
+    perPage,
+    search,
+    selected,
+  ]);
 
   const NoDataComponent = () => (
     <div className="flex items-center justify-center h-64 text-gray-500">
@@ -275,22 +284,6 @@ const RequestApprover = (props: Props) => {
   );
   const LoadingSpinner = () => (
     <table className="table" style={{ background: "white" }}>
-      <thead>
-        <tr>
-          <th
-            className="w-[80px] py-6"
-            style={{ color: "black", fontWeight: "500" }}
-          >
-            Request ID
-          </th>
-          <th style={{ color: "black", fontWeight: "500" }}>Requested by</th>
-          <th style={{ color: "black", fontWeight: "500" }}>Request Type</th>
-          <th style={{ color: "black", fontWeight: "500" }}>Date</th>
-          <th style={{ color: "black", fontWeight: "500" }}>Branch</th>
-          <th style={{ color: "black", fontWeight: "500" }}>Status</th>
-          <th style={{ color: "black", fontWeight: "500" }}>Action</th>
-        </tr>
-      </thead>
       <tbody>
         {Array.from({ length: 6 }).map((_, index) => (
           <tr key={index}>
@@ -312,8 +305,8 @@ const RequestApprover = (props: Props) => {
     setModalIsOpen(true);
   };
 
-  const handleClick = (index: number) => {
-    setSelected(index);
+  const handleClick = (status: string) => {
+    setSelected(status);
   };
 
   const handleSearchRequest = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -321,67 +314,6 @@ const RequestApprover = (props: Props) => {
     debounce.current = setTimeout(() => {
       searchRequest(event.target.value.toLowerCase());
     }, 500);
-  };
-
-  const filteredData = () => {
-    let filteredRequests;
-
-    switch (selected) {
-      case 0:
-        filteredRequests = requests;
-        break;
-      case 1:
-        filteredRequests = requests.filter(
-          (item: Record) => item.completed_status.trim() === "Completed",
-        );
-        break;
-      case 2:
-        filteredRequests = requests.filter(
-          (item: Record) =>
-            item.status.trim() === "Pending" ||
-            item.status.trim() === "Ongoing",
-        );
-        break;
-      case 3:
-        filteredRequests = requests.filter(
-          (item: Record) =>
-            item.status.trim() === "Approved" &&
-            item.completed_status.trim() !== "Completed",
-        );
-        break;
-      case 4:
-        filteredRequests = requests.filter(
-          (item: Record) => item.status.trim() === "Disapproved",
-        );
-        break;
-      default:
-        filteredRequests = requests;
-    }
-
-    // if (search.trim()) {
-    //   filteredRequests = filteredRequests.filter((item: Record) => {
-    //     const formattedDate = new Date(item.created_at).toLocaleDateString(
-    //       "en-US",
-    //       {
-    //         year: "numeric",
-    //         month: "long",
-    //         day: "numeric",
-    //       }
-    //     );
-    //     const branchId = parseInt(item?.form_data[0].branch, 10);
-    //     const branchCode = branchMap.get(branchId)?.toLowerCase();
-
-    //     return (
-    //       item.request_code.toLowerCase().includes(search.toLowerCase()) ||
-    //       item.form_type.toLowerCase().includes(search.toLowerCase()) ||
-    //       formattedDate.toLowerCase().includes(search) ||
-    //       branchCode?.includes(search.toLowerCase()) ||
-    //       item.status.toLowerCase().includes(search.toLowerCase())
-    //     );
-    //   });
-    // }
-
-    return filteredRequests;
   };
 
   const columns = [
@@ -493,6 +425,7 @@ const RequestApprover = (props: Props) => {
               page: page,
               per_page: perPage,
               search: search,
+              status: selected,
             },
           },
         );
@@ -508,11 +441,26 @@ const RequestApprover = (props: Props) => {
   };
 
   const items = [
-    "All Requests",
-    "Completed Requests",
-    "Pending Requests",
-    "Approved Requests",
-    "Unsuccessful Requests",
+    {
+      label: "All Requests",
+      value: "ALL",
+    },
+    {
+      label: "Completed Requests",
+      value: "Completed",
+    },
+    {
+      label: "Pending Requests",
+      value: "Pending",
+    },
+    {
+      label: "Ongoing Requests",
+      value: "Ongoing",
+    },
+    {
+      label: "Unsuccessful Requests",
+      value: "Disapproved",
+    },
   ];
 
   const handlePerRowsChange = (pageRow: number) => {
@@ -551,12 +499,15 @@ const RequestApprover = (props: Props) => {
                 {items.map((item, index) => (
                   <li
                     key={index}
-                    onClick={() => handleClick(index)}
+                    onClick={() => {
+                      handleClick(item.value);
+                      setLoading(true);
+                    }}
                     className={`cursor-pointer hover:text-primary px-2 ${
-                      selected === index ? "underline text-primary" : ""
+                      selected === item.value ? "underline text-primary" : ""
                     } underline-offset-8 decoration-primary decoration-2`}
                   >
-                    {item}
+                    {item.label}
                   </li>
                 ))}
               </div>
@@ -583,7 +534,7 @@ const RequestApprover = (props: Props) => {
               columns={columns}
               defaultSortAsc={false}
               data={
-                filteredData()
+                requests
                   .map((item: Record) => ({
                     ...item,
                     date: new Date(item.date),
@@ -601,6 +552,7 @@ const RequestApprover = (props: Props) => {
               onChangeRowsPerPage={handlePerRowsChange}
               paginationTotalRows={totalPages}
               paginationRowsPerPageOptions={paginationRowsPerPageOptions}
+              persistTableHead
             />
           </div>
         </div>
