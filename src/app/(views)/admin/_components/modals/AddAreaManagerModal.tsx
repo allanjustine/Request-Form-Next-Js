@@ -55,7 +55,7 @@ const AddAreaManagerModal = ({
           .filter(
             (item: User) =>
               item.position.trim() === "Area Manager" &&
-              item.area_managers.length === 0
+              item.area_managers.length === 0,
           )
           .map((item: User) => ({
             id: item.id,
@@ -107,7 +107,7 @@ const AddAreaManagerModal = ({
   const handleCheckboxChange = (id: number) => {
     if (selectedBranches.includes(id)) {
       setSelectedBranches(
-        selectedBranches.filter((branchId) => branchId !== id)
+        selectedBranches.filter((branchId) => branchId !== id),
       );
     } else {
       setSelectedBranches([...selectedBranches, id]);
@@ -154,7 +154,7 @@ const AddAreaManagerModal = ({
   }
   const handleRemoveBranch = (branchIdToRemove: number) => {
     setSelectedBranches(
-      selectedBranches.filter((id) => id !== branchIdToRemove)
+      selectedBranches.filter((id) => id !== branchIdToRemove),
     );
   };
 
