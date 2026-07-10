@@ -334,7 +334,13 @@ const Registration = () => {
                     <label className={labelCls}>Username</label>
                     <input
                       type="text"
-                      {...register("userName")}
+                      {...register("userName", {
+                        onChange: (e) => {
+                          if (e.target.value.includes(" ")) {
+                            e.target.value = e.target.value.trim();
+                          }
+                        },
+                      })}
                       placeholder="Enter username"
                       className={`${inputCls} ${errors.userName ? "border-error" : ""}`}
                     />
