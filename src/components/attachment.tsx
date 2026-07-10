@@ -35,7 +35,10 @@ export default function Attachment({
         )}
       </div>
 
-      <div className="mt-3 text-sm font-semibold text-base-content truncate">
+      <div
+        className="mt-3 text-sm font-semibold text-base-content truncate"
+        title={fileName}
+      >
         {fileName}
       </div>
       <div className="mt-2 text-xs text-gray-500">
