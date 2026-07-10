@@ -1320,7 +1320,7 @@ const ApproverCashAdvance: React.FC<Props> = ({
             <p className="font-semibold">Approved Attachment:</p>
 
             {record.approved_attachment.length === 0 &&
-            user.position === "AVP - Finance" &&
+            user.is_avp_finance_staff &&
             record.status === "Pending" ? (
               <>
                 <input
