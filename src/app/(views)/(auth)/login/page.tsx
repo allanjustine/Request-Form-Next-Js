@@ -101,7 +101,7 @@ const Login = () => {
               {/* Email */}
               <div>
                 <label className="block text-sm font-medium text-base-content mb-1.5">
-                  Email / Username
+                  Email / Username / Employee ID
                 </label>
                 <input
                   {...register("email", {
@@ -112,7 +112,7 @@ const Login = () => {
                       message: "Invalid email address",
                     },
                   })}
-                  placeholder="Enter your email"
+                  placeholder="Enter your email / username / employee ID"
                   className={`w-full h-11 px-4 rounded-xl bg-base-200 border transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-base-content placeholder:text-base-content/40 autofill-input ${
                     errors.email ? "border-error" : "border-transparent"
                   }`}
