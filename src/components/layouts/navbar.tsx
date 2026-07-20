@@ -346,6 +346,12 @@ const Navbar = ({
     router.push("/request");
   };
 
+  const handleGoToSharedRequests =
+    (notifId: number, request_code: string) => () => {
+      router.push(`/shared-requests?search=${request_code}`);
+      markAsReadNotification(notifId);
+    };
+
   const handleViewAndMarkReadNotification =
     (requestId: any, notifId: any) => () => {
       handleView(requestId)();
@@ -540,19 +546,24 @@ const Navbar = ({
                         const handles =
                           notif.data.type === "feedback"
                             ? handleReadOnly(notif.id)
-                            : !notif.data.request_id
-                              ? handleGoToAllRequest()
-                              : notif.data.request_reference === "approver"
-                                ? handleViewAndMarkReadNotification(
-                                    notif.data.request_id,
-                                    notif.id,
-                                  )
-                                : notif.data.request_reference === "requester"
-                                  ? handleViewAndMarkReadRequestNotification(
+                            : notif.data.title === "Shared a Request"
+                              ? handleGoToSharedRequests(
+                                  notif.id,
+                                  notif.data.request_code,
+                                )
+                              : !notif.data.request_id
+                                ? handleGoToAllRequest()
+                                : notif.data.request_reference === "approver"
+                                  ? handleViewAndMarkReadNotification(
                                       notif.data.request_id,
                                       notif.id,
                                     )
-                                  : handleGoToAllRequest();
+                                  : notif.data.request_reference === "requester"
+                                    ? handleViewAndMarkReadRequestNotification(
+                                        notif.data.request_id,
+                                        notif.id,
+                                      )
+                                    : handleGoToAllRequest();
 
                         const textColor =
                           notif.data.status === "approved"
