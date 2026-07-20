@@ -124,7 +124,7 @@ export default function Share({
 
         <div className="max-h-[70vh] overflow-hidden">
           {isLoading ? (
-            <ShareUserLoader />
+            <ShareUserLoader total={8} />
           ) : users?.length > 0 ? (
             <>
               <label className="input w-full h-17">
