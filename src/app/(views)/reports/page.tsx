@@ -3,13 +3,12 @@
 import DataTable from "react-data-table-component";
 import useFetch from "../admin/_hooks/useFetch";
 import { paginationRowsPerPageOptions } from "@/constants/paginationRowsPerPageOptions";
-import { BiRotateRight, BiSearchAlt } from "react-icons/bi";
+import { BiRotateRight } from "react-icons/bi";
 import { format } from "date-fns";
 import { FILTER } from "@/constants/filters";
 import FilterReports from "@/components/filter-reports";
 import { useState } from "react";
 import Modal from "./_components/modal";
-import { RotateLoader } from "react-spinners";
 import authenticatedPage from "@/lib/authenticatedPage";
 
 const Reports = () => {
