@@ -2,26 +2,21 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import DataTable from "react-data-table-component";
-import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import Swal from "sweetalert2";
 import echo from "@/hooks/echo";
 import Link from "next/link";
-import ViewStockModal from "@/components/basic-modals/ViewStockModal";
-import ViewDiscountModal from "@/components/basic-modals/ViewDiscountModal";
-import ViewPurchaseModal from "@/components/basic-modals/ViewPurchaseModal";
-import ViewCashDisbursementModal from "@/components/basic-modals/ViewCashDisbursementModal";
-import ViewCashAdvanceModal from "@/components/basic-modals/ViewCashAdvanceModal";
-import ViewLiquidationModal from "@/components/basic-modals/ViewLiquidationModal";
-import ViewRequestModal from "@/components/basic-modals/ViewRequestModal";
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import authenticatedPage from "@/lib/authenticatedPage";
 import { paginationRowsPerPageOptions } from "@/constants/paginationRowsPerPageOptions";
-import ViewCheckIssuanceModal from "@/components/basic-modals/ViewCheckIssuance";
 import { BiRotateRight } from "react-icons/bi";
+import Share from "./_components/share";
+import ViewRequest from "@/app/_components/view-request";
+import SharedItemModal from "./_components/shared-items";
 type Props = {};
 
-type Record = {
+export type RecordProps = {
   total_labor: number;
   total_discount: number;
   total_spotcash: number;
@@ -85,6 +80,7 @@ type Record = {
   };
   approved_attachments: any;
   user_requested: string;
+  total_shared: number;
 };
 
 type MyFormData = {
@@ -220,9 +216,11 @@ const tableCustomStyles = {
 
 const Request = (props: Props) => {
   const [selected, setSelected] = useState<string>("ALL");
-  const [requests, setRequests] = useState<Record[]>([]);
+  const [requests, setRequests] = useState<RecordProps[]>([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<RecordProps | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
   const [notificationReceived, setnotificationReceived] = useState(false);
   const [search, searchRequest] = useState("");
@@ -233,6 +231,13 @@ const Request = (props: Props) => {
   const { user } = useAuth();
   const debounce = useRef<any>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
+  const [selectedRequestId, setSelectedRequestId] = useState<number | null>(
+    null,
+  );
+  const [isSharedItemModalOpen, setIsSharedItemModalOpen] =
+    useState<boolean>(false);
+  const [requestId, setRequestId] = useState<string>("");
 
   useEffect(() => {
     if (!echo || !user.id) return;
@@ -294,14 +299,16 @@ const Request = (props: Props) => {
     perPage,
     search,
     selected,
+    isShareModalOpen,
+    isSharedItemModalOpen,
   ]);
 
-  const handleView = (record: Record) => {
+  const handleView = (record: RecordProps) => {
     setSelectedRecord(record);
     setModalIsOpen(true);
   };
 
-  const handleDelete = (record: Record) => {
+  const handleDelete = (record: RecordProps) => {
     // Check if the status is not "Pending"
     setToDelete(true);
     if (record.status !== "Pending") {
@@ -451,23 +458,28 @@ const Request = (props: Props) => {
     }
   };
 
+  const handleShare = (requestId?: number | null) => {
+    setSelectedRequestId(!isShareModalOpen ? requestId! : null);
+    setIsShareModalOpen(!isShareModalOpen);
+  };
+
   const columns = [
     {
       name: "Request ID",
-      selector: (row: Record) => row.request_code,
+      selector: (row: RecordProps) => row.request_code,
       width: "160px",
       sortable: true,
     },
 
     {
       name: "Request Type",
-      selector: (row: Record) => row.form_type,
+      selector: (row: RecordProps) => row.form_type,
       width: "300px",
       sortable: true,
     },
     {
       name: "Date",
-      selector: (row: Record) =>
+      selector: (row: RecordProps) =>
         new Date(row.created_at).toLocaleDateString(undefined, {
           year: "numeric",
           month: "long",
@@ -477,15 +489,15 @@ const Request = (props: Props) => {
     },
     {
       name: "Branch",
-      selector: (row: Record) => row?.user_requested,
+      selector: (row: RecordProps) => row?.user_requested,
       sortable: true,
     },
     {
       name: "Status",
-      selector: (row: Record) => row.status,
+      selector: (row: RecordProps) => row.status,
       sortable: true,
       width: "150px",
-      cell: (row: Record) => (
+      cell: (row: RecordProps) => (
         <div className="relative flex items-center w-full group">
           {/* Status Badge */}
           <div
@@ -517,9 +529,32 @@ const Request = (props: Props) => {
       ),
     },
     {
+      name: "Total Shared To Other Users",
+      cell: (row: RecordProps) => (
+        <div className="flex items-center gap-2">
+          <div
+            className={`badge ${row.total_shared > 0 ? "bg-success" : "badge-accent"} text-white`}
+          >
+            {row.total_shared || "Not Shared Yet"}{" "}
+          </div>
+          {row.total_shared > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                setIsSharedItemModalOpen(!isSharedItemModalOpen);
+                setRequestId(String(row.id));
+              }}
+            >
+              <EyeIcon className="w-7 h-7 text-blue-500 hover:text-blue-600" />
+            </button>
+          )}
+        </div>
+      ),
+    },
+    {
       name: "Action",
-      width: "180px",
-      cell: (row: Record) => (
+      width: "220px",
+      cell: (row: RecordProps) => (
         <div className="flex items-center justify-center w-full gap-2">
           <button
             className="bg-primary text-white px-3 py-1 rounded-[16px] cursor-pointer"
@@ -535,6 +570,12 @@ const Request = (props: Props) => {
               Delete
             </button>
           )}
+          <button
+            className="bg-success text-white px-3 py-1 rounded-[16px] cursor-pointer"
+            onClick={() => handleShare(row?.id)}
+          >
+            Share
+          </button>
         </div>
       ),
     },
@@ -639,7 +680,7 @@ const Request = (props: Props) => {
               columns={columns}
               defaultSortAsc={false}
               data={requests
-                .map((item: Record) => ({
+                .map((item: RecordProps) => ({
                   ...item,
                   date: new Date(item.date),
                 }))
@@ -660,78 +701,25 @@ const Request = (props: Props) => {
           </div>
         </div>
       </div>
-      {modalIsOpen &&
-        selectedRecord &&
-        selectedRecord.form_type === "Stock Requisition Slip" && (
-          <ViewStockModal
-            closeModal={closeModal}
-            record={{ ...selectedRecord, date: selectedRecord.date.toString() }}
-            refreshData={refreshData}
-          />
-        )}
-      {modalIsOpen &&
-        selectedRecord &&
-        selectedRecord.form_type === "Discount Requisition Form" && (
-          <ViewDiscountModal
-            closeModal={closeModal}
-            record={{ ...selectedRecord, date: selectedRecord.date.toString() }}
-            refreshData={refreshData}
-          />
-        )}
-      {modalIsOpen &&
-        selectedRecord &&
-        selectedRecord.form_type === "Purchase Order Requisition Slip" && (
-          <ViewPurchaseModal
-            closeModal={closeModal}
-            record={{ ...selectedRecord, date: selectedRecord.date.toString() }}
-            refreshData={refreshData}
-          />
-        )}
-      {modalIsOpen &&
-        selectedRecord &&
-        selectedRecord.form_type === "Cash Disbursement Requisition Slip" && (
-          <ViewCashDisbursementModal
-            closeModal={closeModal}
-            record={{ ...selectedRecord, date: selectedRecord.date.toString() }}
-            refreshData={refreshData}
-          />
-        )}
-      {modalIsOpen &&
-        selectedRecord &&
-        selectedRecord.form_type === "Application For Cash Advance" && (
-          <ViewCashAdvanceModal
-            closeModal={closeModal}
-            record={{ ...selectedRecord, date: selectedRecord.date.toString() }}
-            refreshData={refreshData}
-          />
-        )}
-      {modalIsOpen &&
-        selectedRecord &&
-        selectedRecord.form_type === "Liquidation of Actual Expense" && (
-          <ViewLiquidationModal
-            closeModal={closeModal}
-            record={{ ...selectedRecord, date: selectedRecord.date.toString() }}
-            refreshData={refreshData}
-          />
-        )}
-      {modalIsOpen &&
-        selectedRecord &&
-        selectedRecord.form_type === "Refund Request" && (
-          <ViewRequestModal
-            closeModal={closeModal}
-            record={{ ...selectedRecord, date: selectedRecord.date.toString() }}
-            refreshData={refreshData}
-          />
-        )}
-      {modalIsOpen &&
-        selectedRecord &&
-        selectedRecord.form_type === "Check Issuance Requisition Slip" && (
-          <ViewCheckIssuanceModal
-            closeModal={closeModal}
-            record={{ ...selectedRecord, date: selectedRecord.date.toString() }}
-            refreshData={refreshData}
-          />
-        )}
+
+      <ViewRequest
+        modalIsOpen={modalIsOpen}
+        selectedRecord={selectedRecord}
+        closeModal={closeModal}
+        refreshData={refreshData}
+      />
+
+      {isShareModalOpen && (
+        <Share requestId={selectedRequestId} closeModal={handleShare} />
+      )}
+
+      {isSharedItemModalOpen && (
+        <SharedItemModal
+          open={isSharedItemModalOpen}
+          requestId={requestId}
+          setIsSharedItemModalOpen={setIsSharedItemModalOpen}
+        />
+      )}
     </div>
   );
 };
