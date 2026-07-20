@@ -205,7 +205,11 @@ export default function Share({
             className="btn btn-primary"
             type="button"
             onClick={handleShareRequest}
-            disabled={isSubmitting || filteredUser?.length === 0}
+            disabled={
+              isSubmitting ||
+              filteredUser?.length === 0 ||
+              selectedUsers?.length === 0
+            }
           >
             {isSubmitting ? (
               <>
