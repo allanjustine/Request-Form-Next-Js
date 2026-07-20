@@ -19,6 +19,7 @@ import {
   LockClosedIcon,
   FlagIcon,
   UsersIcon,
+  FolderArrowDownIcon,
 } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import Link from "next/link";
@@ -74,6 +75,12 @@ const Sidebar2 = ({ darkMode, role, open, toggleSidebar }: SidebarProps) => {
             icon: FlagIcon,
             path: "/reports",
           },
+          {
+            title: "Shared Requests",
+            submenu: false,
+            icon: FolderArrowDownIcon,
+            path: "/shared-requests",
+          },
           { title: "Help", submenu: false, icon: BookOpenIcon, path: "/help" },
         ]
       : isAuditor
@@ -101,6 +108,12 @@ const Sidebar2 = ({ darkMode, role, open, toggleSidebar }: SidebarProps) => {
               submenu: false,
               icon: FlagIcon,
               path: "/reports",
+            },
+            {
+              title: "Shared Requests",
+              submenu: false,
+              icon: FolderArrowDownIcon,
+              path: "/shared-requests",
             },
             {
               title: "Help",
@@ -134,6 +147,12 @@ const Sidebar2 = ({ darkMode, role, open, toggleSidebar }: SidebarProps) => {
                 submenu: false,
                 icon: DocumentCheckIcon,
                 path: "/approver/request",
+              },
+              {
+                title: "Shared Requests",
+                submenu: false,
+                icon: FolderArrowDownIcon,
+                path: "/shared-requests",
               },
               {
                 title: "Help",
@@ -241,6 +260,12 @@ const Sidebar2 = ({ darkMode, role, open, toggleSidebar }: SidebarProps) => {
                   submenu: false,
                   icon: DocumentPlusIcon,
                   path: "/create-request?title=Stock%20Requisition",
+                },
+                {
+                  title: "Shared Requests",
+                  submenu: false,
+                  icon: FolderArrowDownIcon,
+                  path: "/shared-requests",
                 },
                 {
                   title: "Help",
