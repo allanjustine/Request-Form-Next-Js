@@ -530,6 +530,7 @@ const Request = (props: Props) => {
     },
     {
       name: "Total Shared To Other Users",
+      width: "150px",
       cell: (row: RecordProps) => (
         <div className="flex items-center gap-2">
           <div
@@ -570,12 +571,14 @@ const Request = (props: Props) => {
               Delete
             </button>
           )}
-          <button
-            className="bg-success text-white px-3 py-1 rounded-[16px] cursor-pointer"
-            onClick={() => handleShare(row?.id)}
-          >
-            Share
-          </button>
+          {row.status === "Completed" && (
+            <button
+              className="bg-success text-white px-3 py-1 rounded-[16px] cursor-pointer"
+              onClick={() => handleShare(row?.id)}
+            >
+              Share
+            </button>
+          )}
         </div>
       ),
     },
