@@ -94,7 +94,7 @@ This Next.js client provides users with a comprehensive interface to:
 ### 🔐 Authentication & Authorization
 
 - User registration and email verification
-- Secure JWT-based authentication
+- Sanctum API token-based authentication
 - Password reset via email
 - Role-based access control (RBAC)
 - Persistent session management
