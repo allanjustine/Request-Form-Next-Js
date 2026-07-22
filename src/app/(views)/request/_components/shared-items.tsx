@@ -91,21 +91,20 @@ export default function SharedItemModal({
 
   return (
     <dialog id="my_modal_1" className="modal" open={open}>
-      <div className="modal-box">
+      <div className="modal-box overflow-hidden">
         <h3 className="font-bold text-lg">
           {loading ? <div className="skeleton h-6 w-62"></div> : data.title}
         </h3>
-        <div className="py-4">
-          <ul className="list bg-base-100 rounded-box shadow-md">
-            <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">
-              List of users
-            </li>
-
+        <div>
+          <ul className="list max-h-[calc(100vh-250px)] overflow-y-auto">
             {loading ? (
               <ShareUserLoader total={5} />
             ) : data?.data?.length > 0 ? (
               data.data?.map((item) => (
-                <li className="list-row justify-between flex" key={item.id}>
+                <li
+                  className="list-row justify-between flex gap-1"
+                  key={item.id}
+                >
                   <div>
                     <div className="font-bold">{item.fullName}</div>
                     <div className="text-xs uppercase font-semibold opacity-60">
