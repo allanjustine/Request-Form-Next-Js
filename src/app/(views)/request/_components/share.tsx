@@ -114,7 +114,7 @@ export default function Share({
 
   return (
     <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-full bg-black/50">
-      <div className="relative z-10 w-full p-4 mx-10 overflow-auto bg-base-100 border-black rounded-t-lg shadow-lg md:mx-0 md:w-1/4 space-y-auto h-fit">
+      <div className="relative z-10 w-full p-4 mx-10 overflow-auto bg-base-100 border-black rounded-xl shadow-lg md:mx-0 md:w-1/2 lg:w-1/3 space-y-auto h-fit">
         <div className="sticky flex justify-between top-2 p-5">
           <p className="font-bold">Select users you want to share with</p>
           <button onClick={closeModal} className="cursor-pointer ">
@@ -152,7 +152,7 @@ export default function Share({
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </label>
-              <ul className="list bg-base-100 rounded-box shadow-md max-h-[calc(100vh-400px)] overflow-y-auto space-y-1">
+              <ul className="list bg-base-100 rounded-box shadow-md max-h-[calc(100vh-200px)] overflow-y-auto space-y-1">
                 {filteredUser.map((user: ShareUserProp, index) => (
                   <ShareUserLists
                     user={user}
