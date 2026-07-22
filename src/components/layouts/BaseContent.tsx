@@ -16,7 +16,7 @@ import { RiCustomerService2Fill } from "react-icons/ri";
 const BaseContent = ({ children }: any) => {
   const [isSidebarVisible, setIsSidebarVisible] = useState<any>(false);
   const [signature, setSignature] = useState<SignatureCanvas | null | any>(
-    null
+    null,
   );
   const { user, isLoading, updateProfile, isAuthenticated } = useAuth();
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
