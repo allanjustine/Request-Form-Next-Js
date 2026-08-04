@@ -85,13 +85,15 @@ const Reports = () => {
           >
             View Details
           </button>
-          <button
-            type="button"
-            className="btn btn-xs btn-error text-white"
-            onClick={handleCancelRequest(row.id)}
-          >
-            Cancel
-          </button>
+          {row.status !== "Canceled" && (
+            <button
+              type="button"
+              className="btn btn-xs btn-error text-white"
+              onClick={handleCancelRequest(row.id)}
+            >
+              Cancel
+            </button>
+          )}
         </div>
       ),
     },
