@@ -332,6 +332,139 @@ const ApproverDashboard: React.FC<Props> = ({}) => {
           <Image alt="man" src={Man} width={320} height={176} />
         </div>
       </div>
+      <div className="p-3 my-3">
+        <div className="flex justify-between items-center">
+          <p className="text-[25px]! font-bold">Approval Request</p>
+          <Link
+            href="/approver/request"
+            className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl"
+          >
+            See all
+          </Link>
+        </div>
+        <div className="grid w-full grid-cols-1 gap-8 mt-4 space-y-2 sm:w-full md:grid-cols-2 lg:grid-cols-5 md:space-y-0">
+          <div className={`${boxWhite} hover:-translate-y-1`}>
+            <div className={`${boxPink} bg-primary`}>
+              <FontAwesomeIcon
+                icon={faFileLines}
+                className={`${outerLogo} text-[#49789e]`}
+              />
+              <div className={`${innerBox}`}>
+                <FontAwesomeIcon
+                  icon={faFileLines}
+                  className={`${innerLogo} text-primary`}
+                />
+              </div>
+              <p className="!text-[16px] font-semibold mt-[10px] ml-[17px] absolute">
+                Total Requests
+              </p>
+              <p className="!text-[40px] font-bold bottom-6 mx-5 absolute">
+                {dataLoading ? (
+                  <span className="my-4 custom-loader bottom-6"></span>
+                ) : (
+                  approvalRequestCounts.total
+                )}
+              </p>
+            </div>
+          </div>
+          <div className={`${boxWhite} hover:-translate-y-1`}>
+            <div className={`${boxPink} bg-[#64a73a]`}>
+              <FontAwesomeIcon
+                icon={faFileCircleCheck}
+                className={`${outerLogo} text-[#82f238]`}
+              />
+              <div className={`${innerBox}`}>
+                <FontAwesomeIcon
+                  icon={faFileCircleCheck}
+                  className={`${innerLogo} text-[#1b6915]`}
+                />
+              </div>
+              <p className="!text-[16px] font-semibold mt-[10px] ml-[17px] absolute">
+                Completed Requests
+              </p>
+              <p className="!text-[40px] font-bold bottom-6 mx-5 absolute">
+                {dataLoading ? (
+                  <span className="my-4 custom-loader bottom-6"></span>
+                ) : (
+                  approvalRequestCounts.total_completed
+                )}
+              </p>
+            </div>
+          </div>
+          <div className={`${boxWhite} hover:-translate-y-1`}>
+            <div className={`${boxPink} bg-[#19bc7a]`}>
+              <FontAwesomeIcon
+                icon={faRotate}
+                className={`${outerLogo} text-[#0b8652]`}
+              />
+              <div className={`${innerBox}`}>
+                <FontAwesomeIcon
+                  icon={faRotate}
+                  className={`${innerLogo} text-[#208642]`}
+                />
+              </div>
+              <p className="!text-[16px] font-semibold mt-[10px] ml-[17px] absolute">
+                Ongoing Requests
+              </p>
+              <p className="!text-[40px] font-bold bottom-6 mx-5 absolute">
+                {dataLoading ? (
+                  <span className="my-4 custom-loader bottom-6"></span>
+                ) : (
+                  approvalRequestCounts.total_ongoing
+                )}
+              </p>
+            </div>
+          </div>
+          <div className={`${boxWhite} hover:-translate-y-1`}>
+            <div className={`${boxPink} bg-secondary`}>
+              <FontAwesomeIcon
+                icon={faClockRotateLeft}
+                className={`${outerLogo} text-[#7b4d0c]`}
+              />
+              <div className={`${innerBox}`}>
+                <FontAwesomeIcon
+                  icon={faClockRotateLeft}
+                  className={`${innerLogo} text-secondary`}
+                />
+              </div>
+              <p className="!text-[16px] font-semibold mt-[10px] ml-[17px] absolute">
+                Pending Requests
+              </p>
+              <p className="!text-[40px] font-bold bottom-6 mx-5 absolute">
+                {dataLoading ? (
+                  <span className="my-4 custom-loader bottom-6"></span>
+                ) : (
+                  approvalRequestCounts.total_pending
+                )}
+              </p>
+            </div>
+          </div>
+          <div className={`${boxWhite} hover:-translate-y-1`}>
+            <div className={`${boxPink} bg-accent`}>
+              <FontAwesomeIcon
+                icon={faFileCircleXmark}
+                className={`${outerLogo} text-[#6b0d2d]`}
+              />
+              <div className={`${innerBox}`}>
+                <FontAwesomeIcon
+                  icon={faFileCircleXmark}
+                  className={`${innerLogo} text-accent`}
+                />
+              </div>
+              <p className="!text-[16px] font-semibold mt-[10px] ml-[17px] absolute">
+                Unsuccessful Requests
+              </p>
+              <p className="!text-[40px] font-bold bottom-6 mx-5 absolute">
+                {dataLoading ? (
+                  <span className="my-4 custom-loader bottom-6"></span>
+                ) : (
+                  approvalRequestCounts.total_disapproved
+                )}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="p-3 my-3">
         <div className="flex justify-between items-center">
@@ -460,139 +593,6 @@ const ApproverDashboard: React.FC<Props> = ({}) => {
                   <span className="my-4 custom-loader bottom-6"></span>
                 ) : (
                   totalDisapprovedRequests
-                )}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="p-3 my-3">
-        <div className="flex justify-between items-center">
-          <p className="text-[25px]! font-bold">Approval Request</p>
-          <Link
-            href="/approver/request"
-            className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl"
-          >
-            See all
-          </Link>
-        </div>
-        <div className="grid w-full grid-cols-1 gap-8 mt-4 space-y-2 sm:w-full md:grid-cols-2 lg:grid-cols-5 md:space-y-0">
-          <div className={`${boxWhite} hover:-translate-y-1`}>
-            <div className={`${boxPink} bg-primary`}>
-              <FontAwesomeIcon
-                icon={faFileLines}
-                className={`${outerLogo} text-[#49789e]`}
-              />
-              <div className={`${innerBox}`}>
-                <FontAwesomeIcon
-                  icon={faFileLines}
-                  className={`${innerLogo} text-primary`}
-                />
-              </div>
-              <p className="!text-[16px] font-semibold mt-[10px] ml-[17px] absolute">
-                Total Requests
-              </p>
-              <p className="!text-[40px] font-bold bottom-6 mx-5 absolute">
-                {dataLoading ? (
-                  <span className="my-4 custom-loader bottom-6"></span>
-                ) : (
-                  approvalRequestCounts.total
-                )}
-              </p>
-            </div>
-          </div>
-          <div className={`${boxWhite} hover:-translate-y-1`}>
-            <div className={`${boxPink} bg-[#64a73a]`}>
-              <FontAwesomeIcon
-                icon={faFileCircleCheck}
-                className={`${outerLogo} text-[#82f238]`}
-              />
-              <div className={`${innerBox}`}>
-                <FontAwesomeIcon
-                  icon={faFileCircleCheck}
-                  className={`${innerLogo} text-[#1b6915]`}
-                />
-              </div>
-              <p className="!text-[16px] font-semibold mt-[10px] ml-[17px] absolute">
-                Completed Requests
-              </p>
-              <p className="!text-[40px] font-bold bottom-6 mx-5 absolute">
-                {dataLoading ? (
-                  <span className="my-4 custom-loader bottom-6"></span>
-                ) : (
-                  approvalRequestCounts.total_completed
-                )}
-              </p>
-            </div>
-          </div>
-          <div className={`${boxWhite} hover:-translate-y-1`}>
-            <div className={`${boxPink} bg-[#19bc7a]`}>
-              <FontAwesomeIcon
-                icon={faRotate}
-                className={`${outerLogo} text-[#0b8652]`}
-              />
-              <div className={`${innerBox}`}>
-                <FontAwesomeIcon
-                  icon={faRotate}
-                  className={`${innerLogo} text-[#208642]`}
-                />
-              </div>
-              <p className="!text-[16px] font-semibold mt-[10px] ml-[17px] absolute">
-                Ongoing Requests
-              </p>
-              <p className="!text-[40px] font-bold bottom-6 mx-5 absolute">
-                {dataLoading ? (
-                  <span className="my-4 custom-loader bottom-6"></span>
-                ) : (
-                  approvalRequestCounts.total_ongoing
-                )}
-              </p>
-            </div>
-          </div>
-          <div className={`${boxWhite} hover:-translate-y-1`}>
-            <div className={`${boxPink} bg-secondary`}>
-              <FontAwesomeIcon
-                icon={faClockRotateLeft}
-                className={`${outerLogo} text-[#7b4d0c]`}
-              />
-              <div className={`${innerBox}`}>
-                <FontAwesomeIcon
-                  icon={faClockRotateLeft}
-                  className={`${innerLogo} text-secondary`}
-                />
-              </div>
-              <p className="!text-[16px] font-semibold mt-[10px] ml-[17px] absolute">
-                Pending Requests
-              </p>
-              <p className="!text-[40px] font-bold bottom-6 mx-5 absolute">
-                {dataLoading ? (
-                  <span className="my-4 custom-loader bottom-6"></span>
-                ) : (
-                  approvalRequestCounts.total_pending
-                )}
-              </p>
-            </div>
-          </div>
-          <div className={`${boxWhite} hover:-translate-y-1`}>
-            <div className={`${boxPink} bg-accent`}>
-              <FontAwesomeIcon
-                icon={faFileCircleXmark}
-                className={`${outerLogo} text-[#6b0d2d]`}
-              />
-              <div className={`${innerBox}`}>
-                <FontAwesomeIcon
-                  icon={faFileCircleXmark}
-                  className={`${innerLogo} text-accent`}
-                />
-              </div>
-              <p className="!text-[16px] font-semibold mt-[10px] ml-[17px] absolute">
-                Unsuccessful Requests
-              </p>
-              <p className="!text-[40px] font-bold bottom-6 mx-5 absolute">
-                {dataLoading ? (
-                  <span className="my-4 custom-loader bottom-6"></span>
-                ) : (
-                  approvalRequestCounts.total_disapproved
                 )}
               </p>
             </div>
