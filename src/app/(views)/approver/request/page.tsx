@@ -18,10 +18,13 @@ import { useAuth } from "@/context/AuthContext";
 import { useNotification } from "@/context/NotificationContext";
 import { paginationRowsPerPageOptions } from "@/constants/paginationRowsPerPageOptions";
 import ApproverCheckIssuance from "../_components/modals/ApproverChecklssuance";
-import { BiRotateRight } from "react-icons/bi";
+import { BiDownload, BiRotateRight } from "react-icons/bi";
 import authenticatedPage from "@/lib/authenticatedPage";
 import { useTheme } from "next-themes";
 import TableLoader from "@/components/table-loader";
+import toast from "react-hot-toast";
+import { saveAs } from 'file-saver';
+import * as XLSX from "xlsx";
 type Props = {};
 
 type Record = {
@@ -171,6 +174,7 @@ const RequestApprover = (props: Props) => {
   const debounce = useRef<NodeJS.Timeout>(null);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const { resolvedTheme } = useTheme();
+  const [isExporting, setIsExporting] = useState<boolean>(false);
 
   useEffect(() => {
     if (!user.id || !echo) return;
@@ -236,6 +240,129 @@ const RequestApprover = (props: Props) => {
     search,
     selected,
   ]);
+
+  const handleExport = async () => {
+    if (!user.id || isExporting) return;
+
+    setIsExporting(true);
+    try {
+     
+    const response = await api.get(
+      `/request-forms/for-approval/${user.id}/for-approval-requests`,
+      {
+        params: {
+          status: "ALL",
+          search: "",
+          per_page: 1, 
+          export_all: true,
+        },
+      },
+    );
+
+    const rows = (response.data.request_forms ?? []).filter(
+      (item: any) => item.completed_status === "Completed",
+    );
+
+    if (rows.length === 0) {
+      toast.error("No completed or canceled request forms found to export.", {
+        position: "bottom-right",
+        duration: 5000,
+        icon: "😒",
+        style: {
+          borderRadius: "15px",
+          background: "red",
+          color: "#fff",
+          padding: "15px",
+        },
+      });
+      return;
+    }
+
+    const exportRows = rows.map((item: any) => {
+  
+      let formData: any = item.form_data;
+      if (typeof formData === "string") {
+        try {
+          formData = JSON.parse(formData);
+        } catch {
+          formData = null;
+        }
+      }
+      if (Array.isArray(formData)) {
+        formData = formData[0] ?? null;
+      }
+      const formItems: any[] = Array.isArray(formData?.items)
+        ? formData.items
+        : [];
+
+      const baseRow = {
+        "Date": item.created_at
+          ? new Date(item.created_at).toLocaleDateString(undefined, {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })
+          : "",
+        "Branch": item.branch?.name ?? "",
+        "Request Code": item.request_code,
+        "Form Type": item.form_type,
+        "Requested By": item.requested_by,
+      };
+
+      // Combine all item descriptions into one cell each, comma-separated.
+    const description = formItems
+      .map((formItem: any) => formItem.description ?? "")
+      .filter((d: string) => d !== "")
+      .join(", ");
+
+        return {
+          ...baseRow,
+          "Description": description,
+          "Grand Total": formData?.grand_total ?? "",
+        };
+      });
+
+    const worksheet = XLSX.utils.json_to_sheet(exportRows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Requests");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const blob = new Blob([excelBuffer], {
+      type: "application/octet-stream",
+    });
+
+      saveAs(blob, "requests.xlsx");
+
+      toast.success("Export ready! Check your downloads folder.", {
+        position: "bottom-center",
+        duration: 5000,
+        style: {
+          borderRadius: "15px",
+          background: "green",
+          color: "#fff",
+          padding: "15px",
+        },
+      });
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.error("Export failed! Please try again.", {
+        position: "bottom-right",
+        duration: 5000,
+        icon: "😒",
+        style: {
+          borderRadius: "15px",
+          background: "red",
+          color: "#fff",
+          padding: "15px",
+        },
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const NoDataComponent = () => (
     <div className="flex items-center justify-center h-64 text-gray-500">
@@ -435,6 +562,7 @@ const RequestApprover = (props: Props) => {
             Send Request
           </button>
         </Link>
+        <div className="flex gap-2">
         <button
           type="button"
           disabled={isRefreshing}
@@ -446,6 +574,16 @@ const RequestApprover = (props: Props) => {
           />{" "}
           <span>{isRefreshing ? "Refreshing..." : "Refresh"}</span>
         </button>
+        <button
+          type="button"
+          disabled={isExporting}
+          onClick={handleExport}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 flex gap-1 rounded float-right disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <BiDownload className="size-6" />
+          <span>{isExporting ? "Exporting..." : "Export"}</span>
+        </button>
+        </div>
       </div>
       <div className="relative w-full h-auto rounded-lg drop-shadow-lg md:mr-4">
         <div className="flex flex-col items-center w-full overflow-x-auto bg-base-100 rounded-lg">

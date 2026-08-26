@@ -598,7 +598,7 @@ const ApproverDashboard: React.FC<Props> = ({}) => {
             </div>
           </div>
         </div>
-      </div> */}
+      </div>
       <div className="flex flex-col gap-4 md:flex-row ">
         <div className="flex-7 pt-2 bg-base-100 drop-shadow-lg w-full rounded-[12px] h-[327px] mt-4">
           <h1 className="text-lg font-bold text-center ">
