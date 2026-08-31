@@ -332,7 +332,7 @@ const ApproverDashboard: React.FC<Props> = ({}) => {
           <Image alt="man" src={Man} width={320} height={176} />
         </div>
       </div>
-      <div className="p-3 my-3">
+      {/* <div className="p-3 my-3">
         <div className="flex justify-between items-center">
           <p className="text-[25px]! font-bold">Approval Request</p>
           <Link
@@ -464,7 +464,7 @@ const ApproverDashboard: React.FC<Props> = ({}) => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="p-3 my-3">
         <div className="flex justify-between items-center">
