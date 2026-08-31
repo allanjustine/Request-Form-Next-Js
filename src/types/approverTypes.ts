@@ -6,4 +6,5 @@ export type Approver = {
   position: string;
   signature?: string;
   status?: string;
+  updated_at?: string;
 };
