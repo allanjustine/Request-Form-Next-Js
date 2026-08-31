@@ -1,5 +1,6 @@
 import Storage from "@/utils/storage";
 import Image from "next/image";
+import { formatDate } from "@/components/formatDate";
 
 type Props = {
   isFetchingApprovers: boolean;
@@ -151,6 +152,9 @@ export default function ApproverLists({
                               {user.status}
                             </p>
                           )}
+                          {user.status !== "Pending" && (
+                            <p> = {formatDate(user.updated_at)}</p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -223,6 +227,9 @@ export default function ApproverLists({
                             {user.status}
                           </p>
                         )}
+                        {user.status !== "Pending" && (
+                            <p> = {formatDate(user.updated_at)}</p>
+                          )}
                       </div>
                     </div>
                   </div>

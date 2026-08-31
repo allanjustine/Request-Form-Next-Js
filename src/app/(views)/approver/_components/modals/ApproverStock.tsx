@@ -40,6 +40,7 @@ interface Approver {
   signature: string;
   status: string;
   branch: string;
+  updated_at: string;
 }
 type Record = {
   request_code: string;
@@ -75,6 +76,7 @@ type FormData = {
       signature: string;
       status: string;
       branch: string;
+      updated_at: string;
     }[];
 
     approved_by: {
@@ -84,6 +86,7 @@ type FormData = {
       signature: string;
       status: string;
       branch: string;
+      updated_at: string;
     }[];
   };
   purpose: string;
@@ -440,7 +443,7 @@ const ApproversStock: React.FC<Props> = ({
             Stock Requisition Slip
           </h1>
           <div className="flex flex-col justify-center ">
-            <p className="underline ">{record?.branch?.branch}</p>
+            <p className="underline ">{record?.branch?.name}</p>
             <p className="text-center">Branch</p>
           </div>
         </div>
@@ -653,32 +656,26 @@ const ApproversStock: React.FC<Props> = ({
                     ))}
                   {avpstaff
                     .filter((user) => user.comment)
-                    .map((userAvp, index) => (
-                      <>
-                        {(userAvp.id === user?.data?.id ||
-                          user?.data?.position === "AVP - Finance") && (
-                          <div className="flex">
-                            <div>
-                              <Image
-                                alt="logo"
-                                className="hidden cursor-pointer sm:block"
-                                src={Avatar}
-                                height={35}
-                                width={45}
-                              />
-                            </div>
-                            <div className="flex flex-row w-full" key={index}>
-                              <li className="flex flex-col justify-between pl-2">
-                                <h3 className="text-lg font-bold">
-                                  {userAvp.firstName} {userAvp.lastName} -{" "}
-                                  {userAvp.position}
-                                </h3>
-                                <p>{userAvp.comment}</p>
-                              </li>
-                            </div>
-                          </div>
-                        )}
-                      </>
+                    .map((user, index) => (
+                      <div className="flex">
+                        <div>
+                          <Image
+                            alt="logo"
+                            className="hidden cursor-pointer sm:block"
+                            src={Avatar}
+                            height={35}
+                            width={45}
+                          />
+                        </div>
+                        <div className="flex flex-row w-full" key={index}>
+                          <li className="flex flex-col justify-between pl-2">
+                            <h3 className="text-lg font-bold">
+                              {user.firstName} {user.lastName} - {user.position}
+                            </h3>
+                            <p>{user.comment}</p>
+                          </li>
+                        </div>
+                      </div>
                     ))}
                 </>
               ) : (
