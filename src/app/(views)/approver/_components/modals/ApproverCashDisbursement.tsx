@@ -40,6 +40,7 @@ interface Approver {
   signature: string;
   status: string;
   branch: string;
+  updated_at?: string;
 }
 type CurrencyCode = "USD" | "EUR" | "GBP" | "JPY";
 type Record = {
@@ -77,6 +78,7 @@ type FormData = {
       signature: string;
       status: string;
       branch: string;
+      updated_at?: string;
     }[];
     approved_by: {
       firstName: string;
@@ -85,6 +87,7 @@ type FormData = {
       signature: string;
       status: string;
       branch: string;
+      updated_at?: string;
     }[];
   };
   purpose: string;

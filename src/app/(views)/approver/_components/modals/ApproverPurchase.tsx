@@ -40,6 +40,7 @@ interface Approver {
   signature: string;
   status: string;
   branch: string;
+  updated_at?: string;
 }
 
 type Record = {

@@ -40,6 +40,7 @@ interface Approver {
   signature: string;
   status: string;
   branch: string;
+  updated_at?: string;
 }
 
 type Record = {
@@ -74,8 +75,8 @@ type Record = {
 type FormData = {
   approvers_id: number;
   approvers: {
-    noted_by: { firstName: string; lastName: string }[];
-    approved_by: { firstName: string; lastName: string }[];
+    noted_by: { firstName: string; lastName: string; updated_at?: string }[];
+    approved_by: { firstName: string; lastName: string; updated_at?: string }[];
   };
   purpose: string;
   items: Item[];

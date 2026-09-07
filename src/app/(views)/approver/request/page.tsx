@@ -74,6 +74,7 @@ interface Approver {
   signature: string;
   status: string;
   branch: string;
+  updated_at?: string;
 }
 type MyFormData = {
   total_labor: number;
@@ -94,6 +95,7 @@ type MyFormData = {
       signature: string;
       status: string;
       branch: string;
+      updated_at?: string;
     }[];
     approved_by: {
       firstName: string;
@@ -102,6 +104,7 @@ type MyFormData = {
       signature: string;
       status: string;
       branch: string;
+      updated_at?: string;
     }[];
   };
   date: string;
