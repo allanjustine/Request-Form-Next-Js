@@ -146,7 +146,7 @@ const Sidebar2 = ({ darkMode, role, open, toggleSidebar }: SidebarProps) => {
                 title: "Process Request",
                 submenu: false,
                 icon: DocumentCheckIcon,
-                path: "/approver/request",
+                path: "/approver/request?status=Pending",
               },
               {
                 title: "Shared Requests",
