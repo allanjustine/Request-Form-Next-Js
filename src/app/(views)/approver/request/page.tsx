@@ -7,6 +7,7 @@ import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import Swal from "sweetalert2";
 import echo from "@/hooks/echo";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import ApproversStock from "../_components/modals/ApproverStock";
 import ApproverDiscount from "../_components/modals/ApproverDiscount";
 import ApproverCashDisbursement from "../_components/modals/ApproverCashDisbursement";
@@ -162,7 +163,10 @@ type MyItem = {
 };
 
 const RequestApprover = (props: Props) => {
-  const [selected, setSelected] = useState<string>("ALL");
+  const searchParams = useSearchParams();
+  const [selected, setSelected] = useState<string>(
+    () => searchParams.get("status") || "ALL",
+  );
   const [requests, setRequests] = useState<Record[]>([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
@@ -178,6 +182,16 @@ const RequestApprover = (props: Props) => {
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const { resolvedTheme } = useTheme();
   const [isExporting, setIsExporting] = useState<boolean>(false);
+
+  // Kung mag-usab ang ?status= sa URL human na-mount ang page (e.g. laing
+  // Process Request click nga wala mag-full reload), i-sync ang tab.
+  useEffect(() => {
+    const statusParam = searchParams.get("status");
+    if (statusParam && statusParam !== selected) {
+      setSelected(statusParam);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   useEffect(() => {
     if (!user.id || !echo) return;

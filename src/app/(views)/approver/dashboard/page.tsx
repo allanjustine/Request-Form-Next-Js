@@ -321,7 +321,7 @@ const ApproverDashboard: React.FC<Props> = ({}) => {
                 Create a Request
               </button>
             </Link>
-            <Link href="/approver/request">
+            <Link href="/approver/request?status=Pending">
               <button className="bg-[#FF947D] hover:bg-[#ff957dd6] text-[15px] w-full lg:h-[57px] h-[40px] rounded-[12px] font-semibold px-3 cursor-pointer">
                 Process Request
               </button>
