@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { api } from "@/lib/api";
-import { PencilIcon } from "@heroicons/react/24/outline";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import EditStockModalSuccess from "./EditStockModalSuccess";
 import BeatLoader from "react-spinners/BeatLoader";
 import Avatar from "@/assets/avatar.png";
@@ -309,6 +309,54 @@ const ViewCashDisbursementModal: React.FC<Props> = ({
       ],
     }));
   };
+  const recalculateGrandTotal = (items: Item[]) => {
+    let total = 0;
+    for (const item of items) {
+      total += parseFloat(item.totalAmount) || 0;
+    }
+    return parseFloat(total.toString()).toFixed(2);
+  };
+
+  const handleAddItem = () => {
+    const newItem: Item = {
+      quantity: "",
+      description: "",
+      unitCost: "",
+      totalAmount: "0",
+      remarks: "",
+    };
+    const newDataCopy = [...newData, newItem];
+    setNewData(newDataCopy);
+    setEditableRecord((prevState) => ({
+      ...prevState,
+      form_data: [
+        {
+          ...prevState.form_data[0],
+          grand_total: recalculateGrandTotal(newDataCopy),
+        },
+      ],
+    }));
+  };
+
+  const handleRemoveItem = (index: number) => {
+    if (newData.length <= 1) {
+      setErrorMessage("At least one item is required.");
+      return;
+    }
+    const newDataCopy = newData.filter((_, i) => i !== index);
+    setErrorMessage("");
+    setNewData(newDataCopy);
+    setEditableRecord((prevState) => ({
+      ...prevState,
+      form_data: [
+        {
+          ...prevState.form_data[0],
+          grand_total: recalculateGrandTotal(newDataCopy),
+        },
+      ],
+    }));
+  };
+
   const handleSaveChanges = async () => {
     // Simple validation
     if (
@@ -560,7 +608,8 @@ const ViewCashDisbursementModal: React.FC<Props> = ({
             </div>
           )}
           <div className="w-full mt-4 overflow-x-auto">
-            <div className="w-full border-collapse">
+            <div className="flex items-start w-full">
+              <div className="flex-1 border-collapse">
               <div className="table-container">
                 <table className="w-full border table-auto lg:table-fixed">
                   <thead className="border border-black h-14 bg-[#8EC7F7]">
@@ -674,7 +723,36 @@ const ViewCashDisbursementModal: React.FC<Props> = ({
                   </tbody>
                 </table>
               </div>
+              </div>
+              {isEditing && (
+                <div className="flex flex-col flex-shrink-0 ml-1">
+                  <div className="h-14" />
+                  {newData.map((_, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-center h-14"
+                    >
+                      <TrashIcon
+                        onClick={() => handleRemoveItem(index)}
+                        className="w-5 h-5 text-red-500 cursor-pointer hover:text-red-700"
+                        title="Remove item"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+            {isEditing && (
+              <div className="mt-2">
+                <button
+                  type="button"
+                  onClick={handleAddItem}
+                  className="p-2 text-white rounded bg-primary cursor-pointer hover:bg-blue-600"
+                >
+                  + Add Item
+                </button>
+              </div>
+            )}
             {errorMessage && <p className="text-red-500">{errorMessage}</p>}
           </div>
           <div className="w-full">
